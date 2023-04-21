@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homework.mapper.HomeworkAnswerMapper">
+    
+    <resultMap type="com.ruoyi.homework.domain.HomeworkAnswer" id="HomeworkAnswerResult">
+        <result property="homeworkAnswerId"    column="homework_answer_id"    />
+        <result property="assignmentId"    column="assignment_id"    />
+        <result property="homeworkAnswerContent"    column="homework_answer_content"    />
+        <result property="answerAttachment"    column="answer_attachment"    />
+        <result property="score"    column="score"    />
+        <result property="homeworkStatus"    column="homework_status"    />
+        <result property="submissionTime"    column="submission_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.homework.domain.vo.HomeworkAnswerVo" id="HomeworkAnswerCustomResult">
+        <result property="deptName"    column="dept_name"    />
+        <result property="userName"    column="user_name"    />
+        <result property="homeworkAnswerId"    column="homework_answer_id"    />
+        <result property="assignmentId"    column="assignment_id"    />
+        <result property="homeworkAnswerContent"    column="homework_answer_content"    />
+        <result property="answerAttachment"    column="answer_attachment"    />
+        <result property="score"    column="score"    />
+        <result property="homeworkStatus"    column="homework_status"    />
+        <result property="submissionTime"    column="submission_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="homeworkName"    column="homework_name"    />
+    </resultMap>
+
+    <resultMap id="HomeworkAnswerHomeworkAssignmentResult" type="HomeworkAnswer" extends="HomeworkAnswerResult">
+        <collection property="homeworkAssignmentList" notNullColumn="sub_assignment_id" javaType="java.util.List" resultMap="HomeworkAssignmentResult" />
+    </resultMap>
+
+    <resultMap type="HomeworkAssignment" id="HomeworkAssignmentResult">
+        <result property="assignmentId"    column="sub_assignment_id"    />
+        <result property="teacherId"    column="sub_teacher_id"    />
+        <result property="homeworkId"    column="sub_homework_id"    />
+        <result property="classId"    column="sub_class_id"    />
+        <result property="studentId"    column="sub_student_id"    />
+        <result property="homeworkAnswerId"    column="sub_homework_answer_id"    />
+        <result property="score"    column="sub_score"    />
+        <result property="homeworkStatus"    column="sub_homework_status"    />
+        <result property="submissionTime"    column="sub_submission_time"    />
+        <result property="createBy"    column="sub_create_by"    />
+        <result property="createTime"    column="sub_create_time"    />
+        <result property="updateBy"    column="sub_update_by"    />
+        <result property="updateTime"    column="sub_update_time"    />
+        <result property="remark"    column="sub_remark"    />
+    </resultMap>
+
+    <sql id="selectHomeworkAnswerVo">
+        select homework_answer_id, assignment_id, homework_answer_content, answer_attachment, score, homework_status, submission_time, create_by, create_time, update_by, update_time, remark from homework_answer
+    </sql>
+
+    <sql id="selectHomeworkAnswerVo2">
+        SELECT
+            t1.homework_answer_id,
+            t1.assignment_id,
+            t3.dept_name,
+            t4.user_name,
+            t2.homework_status,
+            t1.answer_attachment,
+            t1.homework_answer_content,
+            t5.homework_name,
+            t1.submission_time
+        FROM
+            homework_answer t1
+            LEFT JOIN homework_assignment t2 ON t1.assignment_id = t2.assignment_id
+            LEFT JOIN sys_dept t3 ON t2.class_id = t3.dept_id
+            LEFT JOIN sys_user t4 ON t2.student_id = t4.user_id
+            LEFT JOIN homework t5 ON t2.homework_id = t5.homework_id
+    </sql>
+
+    <select id="selectHomeworkAnswerList" parameterType="HomeworkAnswer" resultMap="HomeworkAnswerCustomResult">
+        <include refid="selectHomeworkAnswerVo2"/>
+        <where>  
+            <if test="assignmentId != null "> and assignment_id = #{assignmentId}</if>
+            <if test="homeworkAnswerContent != null  and homeworkAnswerContent != ''"> and homework_answer_content = #{homeworkAnswerContent}</if>
+            <if test="answerAttachment != null  and answerAttachment != ''"> and answer_attachment = #{answerAttachment}</if>
+            <if test="score != null  and score != ''"> and score = #{score}</if>
+            <if test="homeworkStatus != null  and homeworkStatus != ''"> and homework_status = #{homeworkStatus}</if>
+            <if test="submissionTime != null "> and submission_time = #{submissionTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectHomeworkAnswerByHomeworkAnswerId" parameterType="Long" resultMap="HomeworkAnswerCustomResult">
+        <include refid="selectHomeworkAnswerVo2"/>
+        where t1.homework_answer_id = #{homeworkAnswerId}
+    </select>
+        
+    <insert id="insertHomeworkAnswer" parameterType="HomeworkAnswer" useGeneratedKeys="true" keyProperty="homeworkAnswerId">
+        insert into homework_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assignmentId != null">assignment_id,</if>
+            <if test="homeworkAnswerContent != null">homework_answer_content,</if>
+            <if test="answerAttachment != null">answer_attachment,</if>
+            <if test="score != null">score,</if>
+            <if test="homeworkStatus != null">homework_status,</if>
+            <if test="submissionTime != null">submission_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assignmentId != null">#{assignmentId},</if>
+            <if test="homeworkAnswerContent != null">#{homeworkAnswerContent},</if>
+            <if test="answerAttachment != null">#{answerAttachment},</if>
+            <if test="score != null">#{score},</if>
+            <if test="homeworkStatus != null">#{homeworkStatus},</if>
+            <if test="submissionTime != null">#{submissionTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHomeworkAnswer" parameterType="HomeworkAnswer">
+        update homework_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="assignmentId != null">assignment_id = #{assignmentId},</if>
+            <if test="answerAttachment != null">answer_attachment = #{answerAttachment},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="homeworkStatus != null">homework_status = #{homeworkStatus},</if>
+            <if test="submissionTime != null">submission_time = #{submissionTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where homework_answer_id = #{homeworkAnswerId}
+    </update>
+
+    <delete id="deleteHomeworkAnswerByHomeworkAnswerId" parameterType="Long">
+        delete from homework_answer where homework_answer_id = #{homeworkAnswerId}
+    </delete>
+
+    <delete id="deleteHomeworkAnswerByHomeworkAnswerIds" parameterType="String">
+        delete from homework_answer where homework_answer_id in 
+        <foreach item="homeworkAnswerId" collection="array" open="(" separator="," close=")">
+            #{homeworkAnswerId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteHomeworkAssignmentByAssignmentIds" parameterType="String">
+        delete from homework_assignment where assignment_id in 
+        <foreach item="assignmentId" collection="array" open="(" separator="," close=")">
+            #{assignmentId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteHomeworkAssignmentByAssignmentId" parameterType="Long">
+        delete from homework_assignment where assignment_id = #{assignmentId}
+    </delete>
+
+    <insert id="batchHomeworkAssignment">
+        insert into homework_assignment( assignment_id, teacher_id, homework_id, class_id, student_id, homework_answer_id, score, homework_status, submission_time, create_by, create_time, update_by, update_time, remark) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.assignmentId}, #{item.teacherId}, #{item.homeworkId}, #{item.classId}, #{item.studentId}, #{item.homeworkAnswerId}, #{item.score}, #{item.homeworkStatus}, #{item.submissionTime}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, #{item.remark})
+        </foreach>
+    </insert>
+</mapper>

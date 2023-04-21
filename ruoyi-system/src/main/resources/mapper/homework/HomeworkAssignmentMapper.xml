@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homework.mapper.HomeworkAssignmentMapper">
+    
+    <resultMap type="com.ruoyi.homework.domain.HomeworkAssignment" id="HomeworkAssignmentResult">
+        <result property="assignmentId"    column="assignment_id"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="homeworkId"    column="homework_id"    />
+        <result property="classId"    column="class_id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="homeworkAnswerId"    column="homework_answer_id"    />
+        <result property="score"    column="score"    />
+        <result property="homeworkStatus"    column="homework_status"    />
+        <result property="submissionTime"    column="submission_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap  id="HomeworkAssignmentCustomResult" type="com.ruoyi.homework.domain.vo.HomeworkAssignmentVo">
+        <result property="assignmentId"    column="assignment_id"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="homeworkId"    column="homework_id"    />
+        <result property="classId"    column="class_id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="teacherName"    column="teacher_name"    />
+        <result property="homeworkName"    column="homework_name"    />
+        <result property="homeworkContent"    column="homework_content"    />
+        <result property="attachment"    column="attachment"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="beginDate"    column="begin_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="score"    column="score"    />
+        <result property="homeworkStatus"    column="homework_status"    />
+        <result property="submissionTime"    column="submission_time"    />
+    </resultMap>
+
+    <sql id="selectHomeworkAssignmentVo">
+        select assignment_id, teacher_id, homework_id, class_id, student_id, homework_answer_id, score, homework_status, submission_time, create_by, create_time, update_by, update_time, remark from homework_assignment
+    </sql>
+
+    <sql id="selectHomeworkAssignmentVo2">
+        SELECT
+            t1.assignment_id,
+            t1.homework_id,
+            t4.user_name AS teacher_name,
+            t2.homework_name,
+            t2.homework_content,
+            t2.attachment,
+            t3.dept_name,
+            t2.begin_date,
+            t2.end_date,
+            t1.homework_status,
+            t5.submission_time,
+            t5.score
+        FROM
+            homework_assignment t1
+            LEFT JOIN homework t2 ON t1.homework_id = t2.homework_id
+            LEFT JOIN sys_dept t3 ON t1.class_id = t3.dept_id
+            LEFT JOIN sys_user t4 ON t1.teacher_id = t4.user_id
+            LEFT JOIN homework_answer t5 ON t1.assignment_id = t5.assignment_id
+    </sql>
+
+    <select id="selectHomeworkAssignmentList" parameterType="com.ruoyi.homework.domain.HomeworkAssignment" resultMap="HomeworkAssignmentCustomResult">
+        <include refid="selectHomeworkAssignmentVo2"/>
+        <where>  
+            <if test="teacherId != null "> and t1.teacher_id = #{teacherId}</if>
+            <if test="homeworkId != null "> and t1.homework_id = #{homeworkId}</if>
+            <if test="classId != null "> and t1.class_id = #{classId}</if>
+            <if test="studentId != null "> and t1.student_id = #{studentId}</if>
+            <if test="homeworkAnswerId != null "> and t1.homework_answer_id = #{homeworkAnswerId}</if>
+            <if test="score != null  and score != ''"> and t1.score = #{score}</if>
+            <if test="homeworkStatus != null  and homeworkStatus != ''"> and t1.homework_status = #{homeworkStatus}</if>
+            <if test="submissionTime != null "> and t1.submission_time = #{submissionTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectHomeworkAssignmentByAssignmentId" parameterType="Long" resultMap="HomeworkAssignmentCustomResult">
+        <include refid="selectHomeworkAssignmentVo2"/>
+        where t1.assignment_id = #{assignmentId}
+    </select>
+        
+    <insert id="insertHomeworkAssignment" parameterType="com.ruoyi.homework.domain.HomeworkAssignment">
+        insert into homework_assignment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assignmentId != null">assignment_id,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="homeworkId != null">homework_id,</if>
+            <if test="classId != null">class_id,</if>
+            <if test="studentId != null">student_id,</if>
+            <if test="homeworkAnswerId != null">homework_answer_id,</if>
+            <if test="score != null">score,</if>
+            <if test="homeworkStatus != null">homework_status,</if>
+            <if test="submissionTime != null">submission_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assignmentId != null">#{assignmentId},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="homeworkId != null">#{homeworkId},</if>
+            <if test="classId != null">#{classId},</if>
+            <if test="studentId != null">#{studentId},</if>
+            <if test="homeworkAnswerId != null">#{homeworkAnswerId},</if>
+            <if test="score != null">#{score},</if>
+            <if test="homeworkStatus != null">#{homeworkStatus},</if>
+            <if test="submissionTime != null">#{submissionTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHomeworkAssignment" parameterType="com.ruoyi.homework.domain.vo.HomeworkAssignmentVo">
+        update homework_assignment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="homeworkId != null">homework_id = #{homeworkId},</if>
+            <if test="classId != null">class_id = #{classId},</if>
+            <if test="studentId != null">student_id = #{studentId},</if>
+            <if test="homeworkAnswerId != null">homework_answer_id = #{homeworkAnswerId},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="homeworkStatus != null">homework_status = #{homeworkStatus},</if>
+            <if test="submissionTime != null">submission_time = #{submissionTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where assignment_id = #{assignmentId}
+    </update>
+
+    <delete id="deleteHomeworkAssignmentByAssignmentId" parameterType="Long">
+        delete from homework_assignment where assignment_id = #{assignmentId}
+    </delete>
+
+    <delete id="deleteHomeworkAssignmentByAssignmentIds" parameterType="String">
+        delete from homework_assignment where assignment_id in 
+        <foreach item="assignmentId" collection="array" open="(" separator="," close=")">
+            #{assignmentId}
+        </foreach>
+    </delete>
+</mapper>

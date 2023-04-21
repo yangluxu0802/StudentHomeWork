@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homework.mapper.HomeworkMapper">
+    
+    <resultMap type="Homework" id="HomeworkResult">
+        <result property="homeworkId"    column="homework_id"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="homeworkName"    column="homework_name"    />
+        <result property="homeworkContent"    column="homework_content"    />
+        <result property="attachment"    column="attachment"    />
+        <result property="beginDate"    column="begin_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHomeworkVo">
+        SELECT
+            h.homework_id,
+            h.teacher_id,
+            h.homework_name,
+            h.homework_content,
+            h.attachment,
+            h.begin_date,
+            h.end_date,
+            h.create_by,
+            h.create_time,
+            h.update_by,
+            h.update_time,
+            h.remark
+        FROM
+            homework h
+            LEFT JOIN sys_user u ON h.teacher_id = u.user_id
+            LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectHomeworkList" parameterType="Homework" resultMap="HomeworkResult">
+        <include refid="selectHomeworkVo"/>
+        <where>  
+            <if test="teacherId != null "> and teacher_id = #{teacherId}</if>
+            <if test="homeworkName != null  and homeworkName != ''"> and homework_name like concat('%', #{homeworkName}, '%')</if>
+            <if test="homeworkContent != null  and homeworkContent != ''"> and homework_content = #{homeworkContent}</if>
+            <if test="attachment != null  and attachment != ''"> and attachment = #{attachment}</if>
+            <if test="beginDate != null "> and begin_date = #{beginDate}</if>
+            <if test="endDate != null "> and end_date = #{endDate}</if>
+            ${params.dataScope}
+        </where>
+
+    </select>
+    
+    <select id="selectHomeworkByHomeworkId" parameterType="Long" resultMap="HomeworkResult">
+        <include refid="selectHomeworkVo"/>
+        where homework_id = #{homeworkId}
+    </select>
+        
+    <insert id="insertHomework" parameterType="Homework" useGeneratedKeys="true" keyProperty="homeworkId">
+        insert into homework
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="homeworkName != null and homeworkName != ''">homework_name,</if>
+            <if test="homeworkContent != null and homeworkContent != ''">homework_content,</if>
+            <if test="attachment != null">attachment,</if>
+            <if test="beginDate != null">begin_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="homeworkName != null and homeworkName != ''">#{homeworkName},</if>
+            <if test="homeworkContent != null and homeworkContent != ''">#{homeworkContent},</if>
+            <if test="attachment != null">#{attachment},</if>
+            <if test="beginDate != null">#{beginDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHomework" parameterType="Homework">
+        update homework
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="homeworkName != null and homeworkName != ''">homework_name = #{homeworkName},</if>
+            <if test="homeworkContent != null and homeworkContent != ''">homework_content = #{homeworkContent},</if>
+            <if test="attachment != null">attachment = #{attachment},</if>
+            <if test="beginDate != null">begin_date = #{beginDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where homework_id = #{homeworkId}
+    </update>
+
+    <delete id="deleteHomeworkByHomeworkId" parameterType="Long">
+        delete from homework where homework_id = #{homeworkId}
+    </delete>
+
+    <delete id="deleteHomeworkByHomeworkIds" parameterType="String">
+        delete from homework where homework_id in 
+        <foreach item="homeworkId" collection="array" open="(" separator="," close=")">
+            #{homeworkId}
+        </foreach>
+    </delete>
+</mapper>
